@@ -32,11 +32,11 @@ class Dense(Layer):
         self.weights = weights
         self.biases = biases
         
-        if self.weights is None:
+        if self.weights == None:
             self.weights = np.random.randn(output_size, input_size)
 
-        if self.biases is None:
-            self.biases = np.zeros(self.output_size)
+        if self.biases == None:
+            self.biases = np.zeros((self.output_size, 1))
     
     def forward(self, input):
         self.input = input
