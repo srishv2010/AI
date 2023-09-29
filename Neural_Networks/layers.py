@@ -1,22 +1,21 @@
 import numpy as np
-import pandas as pd
 import math as math
 import time as time
 from abc import abstractmethod
 
 
-###################################
-# Layer Base Class ################
-###################################
+###########################################
+# Layer Base Class ########################
+###########################################
 class Layer(object):
     def __init__(self, input_size, output_size) -> None:
         self.input_size = input_size
         self.output_size = output_size
-        self.inputs = None
-        self.outputs = None
+        self.input = None
+        self.output = None
     
     @abstractmethod
-    def forward(self, inputs):
+    def forward(self, input):
         raise NotImplementedError("Layer.forward() has not been implemented yet.")
     
     @abstractmethod
@@ -24,11 +23,11 @@ class Layer(object):
         raise NotImplementedError("Layer.backward() has not been implemented yet.")
 
 
-###################################
-# Dense Layer Class ###############
-###################################
+###########################################
+# Dense Layer Class #######################
+###########################################
 class Dense(Layer):
-    def __init__(self, input_size, output_size, weights=None, biases=None):
+    def __init__(self, input_size, output_size, weights=None, biases=None) -> None:
         super().__init__(input_size, output_size)
         self.weights = weights
         self.biases = biases
@@ -39,12 +38,17 @@ class Dense(Layer):
         if self.biases is None:
             self.biases = np.zeros(self.output_size)
     
-    def forward(self, inputs):
-        self.inputs = inputs
-        weighted_inputs = np.dot(self.weights, self.inputs)
-        self.outputs = weighted_inputs + self.biases
-        return self.outputs
+    def forward(self, input):
+        self.input = input
+        weighted_input = np.dot(self.weights, self.input)
+        self.output = weighted_input + self.biases
+        return self.output
     
     def backward(self, output_gradient, learning_rate):
-        weights_gradient = np.dot()
-        
+        input_gradient = np.dot(self.weights.T, output_gradient)
+        weights_gradient = np.dot(output_gradient, self.input.T)
+        self.weights -= weights_gradient * learning_rate
+        self.biases -= output_gradient * learning_rate
+        return input_gradient
+
+
