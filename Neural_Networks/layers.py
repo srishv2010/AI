@@ -8,14 +8,14 @@ from abc import abstractmethod
 # Layer Base Class ########################
 ###########################################
 class Layer(object):
-    def __init__(self, input_size, output_size) -> None:
-        self.input_size = input_size
+    def __init__(self, inputs_size, output_size) -> None:
+        self.inputs_size = inputs_size
         self.output_size = output_size
-        self.input = None
+        self.inputs = None
         self.output = None
     
     @abstractmethod
-    def forward(self, input):
+    def forward(self, inputs):
         raise NotImplementedError("Layer.forward() has not been implemented yet.")
     
     @abstractmethod
@@ -27,28 +27,28 @@ class Layer(object):
 # Dense Layer Class #######################
 ###########################################
 class Dense(Layer):
-    def __init__(self, input_size, output_size, weights=None, biases=None) -> None:
-        super().__init__(input_size, output_size)
+    def __init__(self, inputs_size, output_size, weights=None, biases=None) -> None:
+        super().__init__(inputs_size, output_size)
         self.weights = weights
         self.biases = biases
         
-        if self.weights == None:
-            self.weights = np.random.randn(output_size, input_size)
+        if self.weights is None:
+            self.weights = np.random.randn(output_size, inputs_size)
 
-        if self.biases == None:
+        if self.biases is None:
             self.biases = np.zeros((self.output_size, 1))
     
-    def forward(self, input):
-        self.input = input
-        weighted_input = np.dot(self.weights, self.input)
-        self.output = weighted_input + self.biases
+    def forward(self, inputs):
+        self.inputs = inputs
+        weighted_inputs = np.dot(self.weights, self.inputs)
+        self.output = weighted_inputs + self.biases
         return self.output
     
     def backward(self, output_gradient, learning_rate):
-        input_gradient = np.dot(self.weights.T, output_gradient)
-        weights_gradient = np.dot(output_gradient, self.input.T)
+        inputs_gradient = np.dot(self.weights.T, output_gradient)
+        weights_gradient = np.dot(output_gradient, self.inputs.T)
         self.weights -= weights_gradient * learning_rate
         self.biases -= output_gradient * learning_rate
-        return input_gradient
+        return inputs_gradient
 
 

@@ -10,7 +10,7 @@ import time as time
 import math as math
 
 
-input = np.resize([
+inputs = np.resize([
     [0, 0],
     [0, 1],
     [1, 0],
@@ -34,8 +34,8 @@ network = networks.Sequential([
 points = []
 for x in np.linspace(0, 1, 20):
     for y in np.linspace(0, 1, 20):
-        z =network.predict([[x], [y]])
-        points.append([x, y, z[0,0]])
+        z = network.predict([[x], [y]])
+        points.append([x, y, z[0, 0]])
 
 points = np.array(points)
 
@@ -44,14 +44,14 @@ ax = fig.add_subplot(111, projection="3d")
 ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=points[:, 2], cmap="winter")
 
 
+network.train(inputs, output)
 
-network.train(input, output)
 
 points = []
 for x in np.linspace(0, 1, 20):
     for y in np.linspace(0, 1, 20):
-        z =network.predict([[x], [y]])
-        points.append([x, y, z[0,0]])
+        z = network.predict([[x], [y]])
+        points.append([x, y, z[0, 0]])
 
 points = np.array(points)
 

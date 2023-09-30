@@ -28,7 +28,6 @@ class MeanSquaredError(LossFunction):
         loss = np.mean(np.power((output_true - output_prediction), 2))
         return loss
 
-    #FIXME Testing
     @staticmethod 
     def loss_prime(output_true, output_prediction):
         loss_prime = 2 * (output_prediction - output_true) / np.size(output_prediction)
