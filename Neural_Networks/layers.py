@@ -50,3 +50,15 @@ class Dense(Layer):
         self.weights -= weights_gradient * learning_rate
         self.biases -= output_gradient * learning_rate
         return inputs_gradient
+
+
+###################################
+# Convolutional Layer Base Class ##
+###################################
+class Convolutional(object):
+    def __init__(self, inputs_shape, kernel_shape, depth) -> None:
+        self.inputs_shape = inputs_shape
+        self.inputs_depth, self.inputs_height, self.inputs_width = self.inputs_shape
+        self.kernels_shape = (depth, self.inputs_depth, kernel_shape[0], kernel_shape[1])
+        self.outputs_shape = (depth, self.inputs_height - kernel_shape[0] + 1, self.inputs_width - kernel_shape[1] + 1)
+        

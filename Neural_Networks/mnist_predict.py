@@ -25,11 +25,19 @@ def preprocess_data(x, y, limit):
 # load MNIST from server
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, y_train = preprocess_data(x_train, y_train, 60000)
-x_test, y_test = preprocess_data(x_test, y_test, 10)
+x_test, y_test = preprocess_data(x_test, y_test, 10000)
 
 with open('mnist_model.pkl', 'rb') as inp:
     network = pickle.load(inp)
-    for x, y in zip(x_test, y_test):
+    correct = 0
+    iterations = 0
+    for x, y in zip(x_train, y_train):
+        iterations += 1
         img = gen_image(x)
-        img.title(f"Prediction: {np.argmax(network.predict(x))}, True: {np.argmax(y)}")
+        prediction = np.argmax(network.predict(x))
+        actual = np.argmax(y)
+        if prediction == actual:
+            correct += 1
+        img.title(f"Prediction: {prediction}, Actual: {actual}, Accuracy: {round(correct / iterations * 100, 2)}%, Iterations: {iterations}, Correct: {correct}")
+        
         img.show()
