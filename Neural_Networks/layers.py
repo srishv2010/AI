@@ -50,5 +50,3 @@ class Dense(Layer):
         self.weights -= weights_gradient * learning_rate
         self.biases -= output_gradient * learning_rate
         return inputs_gradient
-
-
