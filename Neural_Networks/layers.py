@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.signal as sgl
 import math as math
 import time as time
 from abc import abstractmethod
@@ -56,9 +57,49 @@ class Dense(Layer):
 # Convolutional Layer Base Class ##
 ###################################
 class Convolutional(object):
-    def __init__(self, inputs_shape, kernel_shape, depth) -> None:
+    def __init__(self, inputs_shape) -> None:
+        self.inputs = None
+        self.outputs = None
         self.inputs_shape = inputs_shape
-        self.inputs_depth, self.inputs_height, self.inputs_width = self.inputs_shape
-        self.kernels_shape = (depth, self.inputs_depth, kernel_shape[0], kernel_shape[1])
-        self.outputs_shape = (depth, self.inputs_height - kernel_shape[0] + 1, self.inputs_width - kernel_shape[1] + 1)
         
+    @abstractmethod
+    def forward(self, inputs):
+        raise NotImplementedError("Convolutional.forward() has not been implemented yet.")
+    
+    @abstractmethod
+    def backward(self, output_gradient, learning_rate):
+        raise NotImplementedError("Convolutional.backward() has not been implemented yet.")
+
+
+###################################
+# Convolutional2D Layer Class #####
+###################################
+class Convolutional2D(Convolutional):
+    def __init__(self, inputs_shape, kernel_shape, depth=1, kernels=None, biases=None) -> None:
+        super().__init__(inputs_shape)
+        self.inputs_depth, self.inputs_height, self.inputs_width = self.inputs_shape
+        self.kernels_shape = (
+            depth, 
+            self.inputs_depth,
+            kernel_shape[0],
+            kernel_shape[1]
+        )
+        self.outputs_shape = (
+            depth,
+            self.inputs_height - kernel_shape[0] + 1,
+            self.inputs_width - kernel_shape[1] + 1
+        )
+        self.kernels = kernels
+        self.biases = biases
+        if self.kernels is None:
+            self.kernels = np.random.randn(*self.kernels_shape)
+        if self.biases is None:
+            self.biases = np.random.randn(*self.outputs_shape)
+    
+    def forward(self, inputs):
+        self.inputs = inputs
+        self.outputs = np.copy(self.biases)
+        for i in range(self.depth):
+            for j in range(self.inputs_depth):
+                self.output[i] += sgl.correlate2d(self.inputs[j], self.kernels[i, j], "valid")
+        return self.output
