@@ -75,11 +75,17 @@ class Convolutional(object):
 # Convolutional2D Layer Class #####
 ###################################
 class Convolutional2D(Convolutional):
-    def __init__(self, inputs_shape, kernel_shape, depth=1, kernels=None, biases=None) -> None:
+    def __init__(self,
+                 inputs_shape,
+                 kernel_shape,
+                 depth=1,
+                 kernels=None,
+                 biases=None
+                 ) -> None:
         super().__init__(inputs_shape)
         self.inputs_depth, self.inputs_height, self.inputs_width = self.inputs_shape
         self.kernels_shape = (
-            depth, 
+            depth,
             self.inputs_depth,
             kernel_shape[0],
             kernel_shape[1]
@@ -99,7 +105,44 @@ class Convolutional2D(Convolutional):
     def forward(self, inputs):
         self.inputs = inputs
         self.outputs = np.copy(self.biases)
-        for i in range(self.depth):
-            for j in range(self.inputs_depth):
-                self.output[i] += sgl.correlate2d(self.inputs[j], self.kernels[i, j], "valid")
-        return self.output
+        for i, kernels in enumerate(self.kernels):
+            for j, kernel in enumerate(kernels):
+                self.outputs[i] += sgl.correlate2d(self.inputs[j], kernel, "valid")
+        return self.outputs
+    
+    def backward(self, outputs_gradient, learning_rate):
+        inputs_gradient = np.zeros(self.inputs_shape)
+        kernels_gradient = np.zeros(self.kernels_shape)
+        
+        for i, output_gradient in enumerate(outputs_gradient):
+            for j, inputs in enumerate(self.inputs):
+                kernels_gradient[i, j] = sgl.correlate2d(
+                    inputs,
+                    output_gradient,
+                    "valid"
+                )
+                inputs_gradient[j] += sgl.convolve2d(
+                    output_gradient,
+                    self.kernels[i, j],
+                    "full"
+                )
+        
+        self.kernels -= learning_rate * kernels_gradient
+        self.biases -= learning_rate * outputs_gradient
+        return inputs_gradient
+
+
+###################################
+# Reshape Layer Class #############
+###################################
+class Reshape(object):
+    def __init__(self, output_shape) -> None:
+        self.output_shape = output_shape
+        self.inputs_shape = None
+    
+    def forward(self, inputs):
+        self.inputs_shape = inputs.shape
+        return inputs.reshape(self.output_shape)
+    
+    def backward(self, output_gradient, *args, **kwargs):
+        return np.reshape(output_gradient, self.inputs_shape)

@@ -4,9 +4,9 @@ import time as time
 from abc import abstractmethod
 
 
-###########################################
-# Cost Function Base Class ################
-###########################################
+############################################
+# Cost Function Base Class #################
+############################################
 class LossFunction(object):
     @staticmethod
     @abstractmethod
@@ -19,16 +19,31 @@ class LossFunction(object):
         raise NotImplementedError("LossFunction.loss_prime() has not been implemented yet")
     
     
-###########################################
-# Mean Squared Error Cost Function Class ##
-###########################################
+############################################
+# Mean Squared Error Cost Function Class ###
+############################################
 class MeanSquaredError(LossFunction):
     @staticmethod
     def loss(output_true, output_prediction):
         loss = np.mean(np.power((output_true - output_prediction), 2))
         return loss
 
-    @staticmethod 
+    @staticmethod
     def loss_prime(output_true, output_prediction):
         loss_prime = 2 * (output_prediction - output_true) / np.size(output_prediction)
+        return loss_prime
+
+
+############################################
+# Binary Cross Entropy Cost Function Class #
+############################################
+class BinaryCrossEntropy(LossFunction):
+    @staticmethod
+    def loss(output_true, output_prediction):
+        loss = -np.mean(output_true * np.log(output_prediction) + (1 - output_true) * np.log(1 - output_prediction))
+        return loss
+
+    @staticmethod
+    def loss_prime(output_true, output_prediction):
+        loss_prime = output_prediction - output_true
         return loss_prime
