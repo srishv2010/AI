@@ -56,7 +56,8 @@ class Sequential(Network):
             if test_values := (test_inputs is not None and test_outputs is not None):
                 test_error = self.evaluate(test_inputs, test_outputs, verbose=False)
                 if verbose:
-                    print(f"Train Data Error: {total_loss / iterations}; Test Data Error: {test_error}; Epoch: {epoch}/{epochs};")
+                    print(f"Train Data Error: {total_loss / iterations}; "
+                          f"Test Data Error: {test_error}; Epoch: {epoch}/{epochs};")
             if verbose and not test_values:
                 print(f"Train Data Error: {total_loss / iterations}; Epoch: {epoch}/{epochs};")
     

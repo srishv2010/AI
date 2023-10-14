@@ -44,4 +44,4 @@ network.train(
 # test
 for x, y in zip(x_test, y_test):
     output = network.predict(x)
-    print(f"pred: {np.argmax(output)}, true: {np.argmax(y)}")
+    print(f"Prediction: {np.argmax(output)}, Actual: {np.argmax(y)}")

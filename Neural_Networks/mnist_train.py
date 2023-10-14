@@ -11,6 +11,7 @@ from keras.datasets import mnist
 from keras.utils import np_utils
 import pickle
 
+
 def preprocess_data(x, y, limit):
     # reshape and normalize input data
     x = x.reshape(x.shape[0], 28 * 28, 1)
@@ -41,22 +42,6 @@ network = networks.Sequential([
 network.train(x_train, y_train,  500, True, 0.01, x_test, y_test,)
 for x, y in zip(x_test, y_test):
     output = network.predict(x)
-    print('pred:', np.argmax(output), 'true:', np.argmax(y))
+    print('Prediction:', np.argmax(output), 'Actual:', np.argmax(y))
 
 network.evaluate(x_test, y_test)
-
-with open('mnist_model.pkl', 'rb') as inp:
-    try:
-        stored_network = pickle.load(inp)
-        if stored_network.avg_loss < network.avg_loss:
-            print("Failed to Replace")
-            exit(1)
-    except (AttributeError, EOFError) as error:
-        pass
-    finally:
-        pass
-
-with open("mnist_model.pkl", "wb") as file:
-    pickle.dump(network, file, pickle.HIGHEST_PROTOCOL)
-    print("Replaced Successfully")
-
